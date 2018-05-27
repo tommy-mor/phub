@@ -20,6 +20,8 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Page
+;;bad
+
 (defn scroll-to-bottom []
   (let [a (.getElementById js/document "back")]
     (set! (.-scrollTop a) 9999999)))
@@ -30,13 +32,23 @@
   (reset! textbox "")
   (scroll-to-bottom))
 
+(defn getstub [textbox]
+  (let [a (re-find #"@[^\s]*" (str textbox))]
+    (println a "ssssss")
+    a))
+
+(defn get-cursor-pos []
+  (let [a (.getElementById js/document "text")
+        b (if (nil? a) 0 (.-selectionStart a))]
+    (println b)
+    b))
+
 ;; change to work when its not first character
 (defn auto-complete-box [textbox]
-  [:div
-   (if (= (first textbox) "@")
-     [:div.autobox [:pre
-                    (for [item @list-of-ppl]
-                           (str item "\n"))]])])
+  (let [selected (filter #(re-find (re-pattern (getstub textbox)) %) @list-of-ppl)]
+    [:div
+     (if (= (get textbox (- (get-cursor-pos) 1)) "@")
+       [:div.autobox [:pre (for [item selected] (str item "\n"))]])]))
 
 (defn message-list [messages]
   [:div
@@ -44,18 +56,24 @@
      (do
        ^{:key (:key item)} [:div (:text item) ]))])
 
+(defn interp [one]
+    one)
+
 (defn page []
   (fn []
-    [:div#back.mainscreen
-     [message-list @messages]
-     [auto-complete-box @textbox]
-     [:div.textinput
-      [:input.textinput {:auto-focus true :type "text"
-                         :value @textbox
-                         :on-change #(reset! textbox (-> % .-target .-value))
-                         :on-key-down #(case (.-which %)
-                                         13 (send-message {:text @textbox :key @counter})
-                                         nil)}]]]))
+    (let [complete #(swap! textbox interp)]
+      [:div#back.mainscreen
+       [message-list @messages]
+       [:div.textinput
+        [:input#text.textinput {:auto-focus true :type "text"
+                                :value @textbox
+                                :on-change #(reset! textbox (-> % .-target .-value))
+                                :on-key-down #(case (.-which %)
+                                                13 (send-message {:text @textbox :key @counter})
+                                                39 (complete)
+                                                nil)}]]
+       [auto-complete-box @textbox]
+       ])))
 
 
 
