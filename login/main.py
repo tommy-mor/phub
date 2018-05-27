@@ -64,7 +64,6 @@ async def handle_request(request):
     if user and user.password == request.args['pword'][0]:
         response = redirect('/protected')
         response.cookies['username'] = s.sign(user.name.encode()).decode()
-        response.cookies['username']
         return response
     else:
         return html('notfound')
@@ -80,7 +79,8 @@ async def handle_request(request):
 @app.route('/protected')
 @authorized()
 async def handle_request(request):
-    return html('i am logged in good job')
+    return html('i am logged in good job') # return the cljs static site, with usertoken
+
 
 
 if __name__ == '__main__':
