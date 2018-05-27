@@ -1,13 +1,18 @@
 html, body {
     height:100%;
     margin: 0;
+    background: pink;
 }
 .mainscreen {
     background: pink;
-    min-height: 100%;
-    min-width: 100%;
+    left:0px;
+    right: 0px;
+    bottom: 25px;
     padding:5px;
-    position:fixed;
+    position:absolute;
+    overflow:scroll;
+    font-family: monospace;
+    font-size: 14px;
 }
 .textinput {
     background: black;
@@ -18,7 +23,16 @@ html, body {
     min-width: 110%;
     padding: 10px;
     color:white;
+    font-family: monospace;
+    font-size: 14px;
 }
 .white {
     background: grey;
+}
+.autobox {
+    width: 200px;
+    height: 100px;
+    position: absolute;
+    bottom: 0px;
+    background:white;
 }

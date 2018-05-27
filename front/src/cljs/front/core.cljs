@@ -12,29 +12,43 @@
 
 (defonce messages
   (reagent/atom []))
+
 (defonce counter
   (reagent/atom 0))
 
+(defonce list-of-ppl (reagent/atom ["tommy" "chris" "christopher" "chistopherson"]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Page
+(defn scroll-to-bottom []
+  (let [a (.getElementById js/document "back")]
+    (set! (.-scrollTop a) 9999999)))
+
 (defn send-message [message]
   (swap! counter inc)
   (reset! messages (conj @messages message))
-  (reset! textbox ""))
+  (reset! textbox "")
+  (scroll-to-bottom))
+
+;; change to work when its not first character
+(defn auto-complete-box [textbox]
+  [:div
+   (if (= (first textbox) "@")
+     [:div.autobox [:pre
+                    (for [item @list-of-ppl]
+                           (str item "\n"))]])])
 
 (defn message-list [messages]
   [:div
-     (for [item messages]
-       (do
-         (println item)
-         ^{:key (:key item)} [:div (:text item) ]))])
+   (for [item messages]
+     (do
+       ^{:key (:key item)} [:div (:text item) ]))])
 
 (defn page []
   (fn []
-    [:div.mainscreen
-     "Welcome to reagent-figwheel."
+    [:div#back.mainscreen
      [message-list @messages]
+     [auto-complete-box @textbox]
      [:div.textinput
       [:input.textinput {:auto-focus true :type "text"
                          :value @textbox
