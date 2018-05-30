@@ -1,2 +1,3 @@
 - make the login secure by sending a nonce before request, then md5'ing the uname/pw/nonce to sign in
 - make the cljs interface
+- add registration feature
