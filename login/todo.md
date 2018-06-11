@@ -1,6 +1,7 @@
 - make the login secure by sending a nonce before request, then md5'ing the uname/pw/nonce to sign in
 - make the cljs interface
-- make @ completion match even when its not the first thing
-- fix/redo @ completion, its too hard to think about right now
-- connect this server to the rabbitmq bouncer that I still have to set up
+- connect this server to the messagequeue bouncer that I still have to set up
 - add registration feature
+- use weavejester/haslett for websocket connection
+- add websockets to the python server once established
+- point project.clj to build into the static dir of sanic server
