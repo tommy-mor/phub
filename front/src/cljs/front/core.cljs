@@ -33,12 +33,11 @@
 
 (defn getstub [textbox]
   (let [a (clojure.string/join (rest (re-find #"@[^\s]*" (str textbox))))]
-    (println a "ssssss")  a))
+    a))
 
 (defn get-cursor-pos []
   (let [a (.getElementById js/document "text")
         b (if (nil? a) 0 (.-selectionStart a))]
-    (println b)
     b))
 
 ;; change to work when its not first character
@@ -48,8 +47,7 @@
      (let [frontindex (clojure.string/index-of textbox "@")]
        ;; check if there are any spaces in the substring between @ and the cursor, indicating that we should
        ;; not show the box
-       (if-not (and frontindex (not (clojure.string/includes? (subs textbox frontindex (get-cursor-pos)) " ")))
-        (println (str "here " (subs textbox frontindex (get-cursor-pos))))
+       (if (and frontindex (not (clojure.string/includes? (subs textbox frontindex (get-cursor-pos)) " ")))
         [:div.autobox [:pre (for [item selected] (str item "\n"))]]))]))
 
 (defn message-list [messages]
