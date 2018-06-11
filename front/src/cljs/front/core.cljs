@@ -16,6 +16,9 @@
 (defonce counter
   (reagent/atom 0))
 
+(defonce completer
+  (reagent/atom ""))
+
 (defonce list-of-ppl (reagent/atom ["tommy" "chris" "christopher" "chistopherson"]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -25,6 +28,7 @@
 (defn scroll-to-bottom []
   (let [a (.getElementById js/document "back")]
     (set! (.-scrollTop a) 9999999)))
+
 (defn send-message [message]
   (swap! counter inc)
   (reset! messages (conj @messages message))
@@ -40,9 +44,9 @@
         b (if (nil? a) 0 (.-selectionStart a))]
     b))
 
-;; change to work when its not first character
 (defn auto-complete-box [textbox]
   (let [selected (filter #(re-find (re-pattern (getstub textbox)) %) @list-of-ppl)]
+    (reset! completer (first selected))
     [:div
      (let [frontindex (clojure.string/index-of textbox "@")]
        ;; check if there are any spaces in the substring between @ and the cursor, indicating that we should
@@ -55,14 +59,15 @@
    (for [item messages]
      (do
        ^{:key (:key item)} [:div (:text item)]))])
-
+;; replaces the @name text with @namefull as selected by ac
 (defn interp [one]
-
-  one)
+  (clojure.string/replace one (str "@" (getstub one)) (str "@" @completer)))
 
 (defn page []
   (fn []
-    (let [complete #(swap! textbox interp)]
+    (let [complete #(do (.preventDefault %)
+                        (swap!
+                            textbox interp))]
       [:div#back.mainscreen
        [:div (getstub @textbox)]
        [message-list @messages]
@@ -72,7 +77,7 @@
                                 :on-change #(reset! textbox (-> % .-target .-value))
                                 :on-key-down #(case (.-which %)
                                                 13 (send-message {:text @textbox :key @counter})
-                                                39 (complete)
+                                                9 (complete %)
                                                 nil)}]]
        [auto-complete-box @textbox]])))
 
